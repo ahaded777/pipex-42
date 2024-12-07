@@ -6,7 +6,7 @@
 /*   By: aahaded <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 19:42:19 by aahaded           #+#    #+#             */
-/*   Updated: 2024/12/06 11:23:51 by aahaded          ###   ########.fr       */
+/*   Updated: 2024/12/07 18:25:13 by aahaded          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -21,7 +21,7 @@
 # include <fcntl.h>
 # include <stdlib.h>
 
-void	find_path_child(int *pipefd, char **argv);
-char	*find_path_parent(char **result, int *pipefd, char **argv);
+void	find_path_parent(int *pipefd, char **argv);
+char	*find_path_child(char **result, int *pipefd, char **argv);
 
 #endif
