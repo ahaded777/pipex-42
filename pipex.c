@@ -6,7 +6,7 @@
 /*   By: aahaded <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 19:46:23 by aahaded           #+#    #+#             */
-/*   Updated: 2024/12/06 11:52:58 by aahaded          ###   ########.fr       */
+/*   Updated: 2024/12/07 18:23:34 by aahaded          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "pipex.h"
@@ -44,14 +44,36 @@ char	*ft_find_path(char *cmd)
 	argv[1] = cmd;
 	argv[2] = NULL;
 	if (pid == 0)
-		find_path_child(pipefd, argv);
+		find_path_child(&result, pipefd, argv);
 	else
-		find_path_parent(&result, pipefd, argv);
+		find_path_parent(pipefd, argv);
 	result[ft_serch_newline(result, '\n')] = '\0';
 	return (result);
 }
 
 void	child_process(char **argv, int *pipefd)
+{
+	int		file2;
+	char	**words;
+
+	file2 = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (file2 == -1)
+	{
+		perror("Error opening file2");
+		exit(1);
+	}
+	dup2(file2, STDOUT_FILENO);
+	dup2(pipefd[0], STDIN_FILENO);
+	close(file2);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	words = ft_split(argv[3], ' ');
+	execve(ft_find_path(words[0]), words, NULL);
+	perror("Error executing cmd2");
+	exit(1);
+}
+
+void	parent_process(char **argv, int *pipefd)
 {
 	int		file1;
 	char	**words;
@@ -73,28 +95,6 @@ void	child_process(char **argv, int *pipefd)
 	exit(1);
 }
 
-void	parent_process(char **argv, int *pipefd)
-{
-	int		file2;
-	char	**words;
-
-	file2 = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC);
-	if (file2 == -1)
-	{
-		perror("Error opening file2");
-		exit(1);
-	}
-	dup2(file2, STDOUT_FILENO);
-	dup2(pipefd[0], STDIN_FILENO);
-	close(file2);
-	close(pipefd[0]);
-	close(pipefd[1]);
-	words = ft_split(argv[3], ' ');
-	execve(ft_find_path(words[0]), words, NULL);
-	perror("Error executing cmd2");
-	exit(1);
-}
-
 int	main(int argc, char **argv)
 {
 	int		pipefd[2];
@@ -109,13 +109,13 @@ int	main(int argc, char **argv)
 	pipen = pipe(pipefd);
 	pid = fork();
 	if (pid < 0 || pipen == -1)
+	{
+		perror("Error: fork and pipe");
 		exit(1);
+	}
 	if (pid == 0)
 		child_process(argv, pipefd);
 	else
-	{
-		wait(NULL);
 		parent_process(argv, pipefd);
-	}
 	exit(0);
 }
