@@ -11,6 +11,20 @@
 /* ************************************************************************** */
 #include "pipex.h"
 
+void	pipe_fork_tcheck_err(pid_t pid, int pipen)
+{
+	if (pipen < 0)
+	{
+		perror("Error: pipe");
+		exit(EXIT_FAILURE);
+	}
+	if (pid < 0)
+	{
+		perror("Error: fork");
+		exit(EXIT_FAILURE);
+	}
+}
+
 char	*find_path_child(char **result, int *pipefd, char **argv)
 {
 	int	len_buff;
@@ -33,15 +47,5 @@ void	find_path_parent(int *pipefd, char **argv)
 	close(pipefd[1]);
 	execve("/usr/bin/which", argv, NULL);
 	perror("Error executing cmd");
-	exit(1);
-}
-
-void	execute_command(char *cmd)
-{
-	char	**args;
-
-	args = ft_split(cmd, ' ');
-	execve(args[0], args, NULL);
-	perror("Error executing command");
-	exit(1);
+	exit(EXIT_FAILURE);
 }

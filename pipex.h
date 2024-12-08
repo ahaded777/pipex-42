@@ -23,5 +23,6 @@
 
 void	find_path_parent(int *pipefd, char **argv);
 char	*find_path_child(char **result, int *pipefd, char **argv);
+void    pipe_fork_tcheck_err(pid_t pid, int pipen);
 
 #endif

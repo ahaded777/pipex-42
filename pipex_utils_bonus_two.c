@@ -11,7 +11,21 @@
 /* ************************************************************************** */
 #include "pipex_bonus.h"
 
-int	ft_tcheck_path2(char *cmd)
+void	pipe_fork_tcheck_err(pid_t pid, int pipen)
+{
+	if (pipen < 0)
+	{
+		perror("Error: pipe");
+		exit(EXIT_FAILURE);
+	}
+	if (pid < 0)
+	{
+		perror("Error: fork");
+		exit(EXIT_FAILURE);
+	}
+}
+
+int	ft_tcheck_path(char *cmd)
 {
 	char	**words;
 	char	*path;
@@ -20,7 +34,6 @@ int	ft_tcheck_path2(char *cmd)
 	path = ft_find_path(words[0]);
 	if (!path || access(path, X_OK) == -1)
 		return (0);
-	free(path);
 	return (1);
 }
 
@@ -32,7 +45,7 @@ void	setup_here_doc_input_(void)
 	if (temp_file_r < 0)
 	{
 		perror("Error opening temporary file");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	dup2(temp_file_r, STDIN_FILENO);
 	close(temp_file_r);
@@ -47,7 +60,7 @@ void	setup_here_doc_input(char **argv)
 	if (temp_file_wr < 0)
 	{
 		perror("Error creating temporary file");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	while (1)
 	{
@@ -72,19 +85,19 @@ void	check_commands_and_here_doc(int argc, char **argv)
 	int	i;
 
 	i = 3;
-	if (ft_tcheck_path2(argv[2]) == 1)
+	if (ft_tcheck_path(argv[2]) == 1)
 	{
 		printf("Error: fin kayna stop asa7bi\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	else
 	{
 		while (i < argc - 1)
 		{
-			if (!ft_tcheck_path2(argv[i]))
+			if (!ft_tcheck_path(argv[i]))
 			{
 				printf("Error: had lcommand makaynach %s\n", argv[i]);
-				exit(-1);
+				exit(EXIT_FAILURE);
 			}
 			i++;
 		}

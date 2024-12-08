@@ -20,19 +20,19 @@ CFLAGS = -Wall -Wextra -Werror
 all: $(NAME)
 
 $(NAME): $(OBJS) $(OBJS_GET_NEXT)
-	@make -C $(PATH_LIBFT)
+	@make -C $(PATH_LIBFT) --silent
 	$(CC) $(CFLAGS) $(OBJS) $(OBJS_GET_NEXT) $(LIBFT) -o $(NAME)
 
 bonus: $(OBJS_BONUS) $(OBJS_GET_NEXT)
-	@make -C $(PATH_LIBFT)
+	@make -C $(PATH_LIBFT) --silent
 	$(CC) $(CFLAGS) $(OBJS_BONUS) $(OBJS_GET_NEXT) $(LIBFT) -o $(NAME)
 
 clean:
 	rm -f $(OBJS) $(OBJS_BONUS) $(OBJS_GET_NEXT)
-	@make clean -C $(PATH_LIBFT)
+	@make clean -C $(PATH_LIBFT) --silent
 
 fclean: clean
 	rm -f $(NAME)
-	@make fclean -C $(PATH_LIBFT)
+	@make fclean -C $(PATH_LIBFT) --silent
 
 re: fclean all

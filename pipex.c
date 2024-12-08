@@ -31,12 +31,11 @@ char	*ft_find_path(char *cmd)
 	char	**argv;
 	int		pipefd[2];
 	pid_t	pid;
+	int		pipen;
 
-	if (pipe(pipefd) == -1)
-		return (NULL);
+	pipen = pipe(pipefd);
 	pid = fork();
-	if (pid == -1)
-		return (NULL);
+	pipe_fork_tcheck_err(pid, pipen);
 	argv = malloc(sizeof(char *) * 3);
 	if (!argv)
 		return (NULL);
@@ -60,7 +59,7 @@ void	child_process(char **argv, int *pipefd)
 	if (file2 == -1)
 	{
 		perror("Error opening file2");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	dup2(file2, STDOUT_FILENO);
 	dup2(pipefd[0], STDIN_FILENO);
@@ -70,7 +69,7 @@ void	child_process(char **argv, int *pipefd)
 	words = ft_split(argv[3], ' ');
 	execve(ft_find_path(words[0]), words, NULL);
 	perror("Error executing cmd2");
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 void	parent_process(char **argv, int *pipefd)
@@ -82,7 +81,7 @@ void	parent_process(char **argv, int *pipefd)
 	if (file1 == -1)
 	{
 		perror("Error opening file1");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	dup2(file1, STDIN_FILENO);
 	dup2(pipefd[1], STDOUT_FILENO);
@@ -92,7 +91,7 @@ void	parent_process(char **argv, int *pipefd)
 	words = ft_split(argv[2], ' ');
 	execve(ft_find_path(words[0]), words, NULL);
 	perror("Error executing cmd1");
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 int	main(int argc, char **argv)
@@ -103,19 +102,16 @@ int	main(int argc, char **argv)
 
 	if (argc != 5)
 	{
-		write(2, "Error: Bad arguments\n", 22);
-		exit(1);
+		ft_putstr_fd("Error: Bad arguments\n", 2);
+		ft_putstr_fd("Usage: ./pipex file1 cmd1 cmd2 file2\n", 2);
+		exit(EXIT_FAILURE);
 	}
 	pipen = pipe(pipefd);
 	pid = fork();
-	if (pid < 0 || pipen == -1)
-	{
-		perror("Error: fork and pipe");
-		exit(1);
-	}
+	pipe_fork_tcheck_err(pid, pipen);
 	if (pid == 0)
 		child_process(argv, pipefd);
 	else
 		parent_process(argv, pipefd);
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
