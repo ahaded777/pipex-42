@@ -70,11 +70,11 @@ void	check_arguments(int argc, char **argv)
 	{
 		ft_putstr_fd("Error: Bad arguments\n", 2);
 		ft_putstr_fd("Usage: ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2\n", 2);
-		exit(EXIT_FAILURE);	
+		exit(EXIT_FAILURE);
 	}
-	if (argc < 6 && (ft_strncmp(argv[1], "here_doc", ft_strlen((const char *)argv[1])) == 0
-	|| ft_strncmp(argv[1], ".here_doc",
-		ft_strlen((const char *)argv[1])) == 0))
+	if (argc < 6 && (ft_strncmp(argv[1], "here_doc",
+				ft_strlen((const char *)argv[1])) == 0 || ft_strncmp(argv[1],
+				".here_doc", ft_strlen((const char *)argv[1])) == 0))
 	{
 		ft_putstr_fd("Error: Bad arguments\n", 2);
 		ft_putstr_fd("Usage: ./pipex here_doc LIMITER cmd cmd1 file\n", 2);
@@ -88,14 +88,14 @@ int	main(int argc, char **argv)
 
 	check_arguments(argc, argv);
 	if (ft_strncmp(argv[1], "here_doc", ft_strlen((const char *)argv[1])) == 0
-	|| ft_strncmp(argv[1], ".here_doc",
-		ft_strlen((const char *)argv[1])) == 0)
-			check_commands_and_here_doc(argc, argv);
+		|| ft_strncmp(argv[1], ".here_doc",
+			ft_strlen((const char *)argv[1])) == 0)
+		check_commands_and_here_doc(argc, argv);
 	else
 		ft_read_file1(argv);
 	if (ft_strncmp(argv[1], "here_doc", ft_strlen((const char *)argv[1])) == 0
-	|| ft_strncmp(argv[1], ".here_doc",
-		ft_strlen((const char *)argv[1])) == 0)
+		|| ft_strncmp(argv[1], ".here_doc",
+			ft_strlen((const char *)argv[1])) == 0)
 		i = 3;
 	else
 		i = 2;

@@ -6,7 +6,7 @@
 /*   By: aahaded <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 19:42:19 by aahaded           #+#    #+#             */
-/*   Updated: 2024/12/07 18:25:13 by aahaded          ###   ########.fr       */
+/*   Updated: 2024/12/09 14:36:03 by aahaded          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -23,6 +23,6 @@
 
 void	find_path_parent(int *pipefd, char **argv);
 char	*find_path_child(char **result, int *pipefd, char **argv);
-void    pipe_fork_tcheck_err(pid_t pid, int pipen);
+void	pipe_fork_tcheck_err(pid_t pid, int pipen);
 
 #endif

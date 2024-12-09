@@ -63,7 +63,7 @@ static void	setup_pipeline_fork_(int argc, char **argv)
 
 void	setup_pipeline_fork(int argc, char **argv, int i)
 {
-	int	pipefd[2];
+	int		pipefd[2];
 	pid_t	pid;
 	int		pipen;
 
