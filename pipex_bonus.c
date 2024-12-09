@@ -6,7 +6,7 @@
 /*   By: aahaded <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 14:14:48 by aahaded           #+#    #+#             */
-/*   Updated: 2024/12/07 21:27:07 by aahaded          ###   ########.fr       */
+/*   Updated: 2024/12/09 20:07:22 by aahaded          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "pipex_bonus.h"
@@ -33,6 +33,7 @@ char	*ft_find_path(char *cmd)
 	pid_t	pid;
 	int		pipen;
 
+	result = NULL;
 	pipen = pipe(pipefd);
 	pid = fork();
 	pipe_fork_tcheck_err(pid, pipen);
