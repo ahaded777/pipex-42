@@ -50,7 +50,7 @@ static void	setup_pipeline_fork_(int argc, char **argv)
 {
 	int	file2;
 
-	file2 = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC);
+	file2 = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (file2 < 0)
 	{
 		perror("Error opening file2");
