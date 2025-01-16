@@ -11,42 +11,17 @@
 /* ************************************************************************** */
 #include "pipex_bonus.h"
 
-void	find_path_child(int *pipefd, char **argv)
-{
-	close(pipefd[0]);
-	dup2(pipefd[1], STDOUT_FILENO);
-	close(pipefd[1]);
-	execve("/usr/bin/which", argv, NULL);
-	perror("Error executing command");
-	exit(EXIT_FAILURE);
-}
-
-char	*find_path_parent(char **result, int *pipefd, char **argv)
-{
-	int	len_buff;
-
-	close(pipefd[1]);
-	*result = malloc(1024);
-	if (!*result)
-		return (free(argv), NULL);
-	len_buff = read(pipefd[0], *result, 1024);
-	if (len_buff <= 0)
-		return (free(argv), free(*result), NULL);
-	close(pipefd[0]);
-	return (*result);
-}
-
-void	execute_command(char *cmd)
+void	execute_command(char *cmd, char **env)
 {
 	char	**words;
 
 	words = ft_split(cmd, ' ');
-	execve(ft_find_path(words[0]), words, NULL);
+	execve(get_path_env(words[0], env), words, NULL);
 	perror("Error executing command");
 	exit(EXIT_FAILURE);
 }
 
-static void	setup_pipeline_fork_(int argc, char **argv)
+static void	setup_pipeline_fork_(int argc, char **argv, char **env)
 {
 	int	file2;
 
@@ -58,10 +33,10 @@ static void	setup_pipeline_fork_(int argc, char **argv)
 	}
 	dup2(file2, STDOUT_FILENO);
 	close(file2);
-	execute_command(argv[argc - 2]);
+	execute_command(argv[argc - 2], env);
 }
 
-void	setup_pipeline_fork(int argc, char **argv, int i)
+void	setup_pipeline_fork(int argc, char **argv, int i, char **env)
 {
 	int		pipefd[2];
 	pid_t	pid;
@@ -83,9 +58,9 @@ void	setup_pipeline_fork(int argc, char **argv, int i)
 			close(pipefd[0]);
 			dup2(pipefd[1], STDOUT_FILENO);
 			close(pipefd[1]);
-			execute_command(argv[i]);
+			execute_command(argv[i], env);
 		}
 		i++;
 	}
-	setup_pipeline_fork_(argc, argv);
+	setup_pipeline_fork_(argc, argv, env);
 }

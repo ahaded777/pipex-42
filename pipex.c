@@ -11,47 +11,51 @@
 /* ************************************************************************** */
 #include "pipex.h"
 
-int	ft_serch_newline(char *str, char c)
+char	*get_path_env_utils(char **path, char *cmd)
 {
-	int	i;
+	char	*path_arg;
+	int		i;
 
 	i = 0;
-	while (str[i])
+	while (path[i])
 	{
-		if (str[i] == c)
-			break ;
+		path_arg = ft_strjoin(path[i], "/");
+		path_arg = ft_strjoin(path_arg, cmd);
+		if (access(path_arg, X_OK) == 0)
+			return (path_arg);
 		i++;
 	}
-	return (i);
+	return (NULL);
 }
 
-char	*ft_find_path(char *cmd)
+char	*get_path_env(char *cmd, char **env)
 {
-	char	*result;
-	char	**argv;
-	int		pipefd[2];
-	pid_t	pid;
-	int		pipen;
+	int		i;
+	int		check_path;
+	char	**path;
 
-	result = NULL;
-	pipen = pipe(pipefd);
-	pid = fork();
-	pipe_fork_tcheck_err(pid, pipen);
-	argv = malloc(sizeof(char *) * 3);
-	if (!argv)
-		return (NULL);
-	argv[0] = "which";
-	argv[1] = cmd;
-	argv[2] = NULL;
-	if (pid == 0)
-		find_path_child(&result, pipefd, argv);
-	else
-		find_path_parent(pipefd, argv);
-	result[ft_serch_newline(result, '\n')] = '\0';
-	return (result);
+	i = 0;
+	check_path = 0;
+	path = NULL;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], "PATH=", 5) == 0)
+		{
+			check_path = 1;
+			path = ft_split(env[i] + 5, ':');
+			break ;
+		}
+		i++;
+	}
+	if (!check_path)
+		exit(EXIT_FAILURE);
+	if (get_path_env_utils(path, cmd))
+		return (get_path_env_utils(path, cmd));
+	ft_putstr_fd("Error: commad not found", 2);
+	return (NULL);
 }
 
-void	child_process(char **argv, int *pipefd)
+void	child_process(char **argv, int *pipefd, char **env)
 {
 	int		file1;
 	char	**words;
@@ -68,12 +72,12 @@ void	child_process(char **argv, int *pipefd)
 	close(pipefd[0]);
 	close(pipefd[1]);
 	words = ft_split(argv[2], ' ');
-	execve(ft_find_path(words[0]), words, NULL);
+	execve(get_path_env(words[0], env), words, NULL);
 	perror("Error executing cmd1");
 	exit(EXIT_FAILURE);
 }
 
-void	parent_process(char **argv, int *pipefd)
+void	parent_process(char **argv, int *pipefd, char **env)
 {
 	int		file2;
 	char	**words;
@@ -90,32 +94,27 @@ void	parent_process(char **argv, int *pipefd)
 	close(pipefd[0]);
 	close(pipefd[1]);
 	words = ft_split(argv[3], ' ');
-	execve(ft_find_path(words[0]), words, NULL);
+	execve(get_path_env(words[0], env), words, NULL);
 	perror("Error executing cmd2");
 	exit(EXIT_FAILURE);
 }
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **env)
 {
 	int		pipefd[2];
 	pid_t	pid;
 	int		pipen;
 
-	if (argc != 5)
-	{
-		ft_putstr_fd("Error: Bad arguments\n", 2);
-		ft_putstr_fd("Usage: ./pipex file1 cmd1 cmd2 file2\n", 2);
-		exit(EXIT_FAILURE);
-	}
+	check_args(argc, env);
 	pipen = pipe(pipefd);
 	pid = fork();
 	pipe_fork_tcheck_err(pid, pipen);
 	if (pid == 0)
-		child_process(argv, pipefd);
+		child_process(argv, pipefd, env);
 	else
 	{
 		wait(NULL);
-		parent_process(argv, pipefd);
+		parent_process(argv, pipefd, env);
 	}
 	exit(EXIT_SUCCESS);
 }

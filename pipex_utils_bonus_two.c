@@ -25,13 +25,13 @@ void	pipe_fork_tcheck_err(pid_t pid, int pipen)
 	}
 }
 
-int	ft_tcheck_path(char *cmd)
+int	ft_tcheck_path(char *cmd, char **env)
 {
 	char	**words;
 	char	*path;
 
 	words = ft_split(cmd, ' ');
-	path = ft_find_path(words[0]);
+	path = get_path_env(words[0], env);
 	if (!path || access(path, X_OK) == -1)
 		return (0);
 	return (1);
@@ -80,12 +80,12 @@ void	setup_here_doc_input(char **argv)
 	setup_here_doc_input_();
 }
 
-void	check_commands_and_here_doc(int argc, char **argv)
+void	check_commands_and_here_doc(int argc, char **argv, char **env)
 {
 	int	i;
 
 	i = 3;
-	if (ft_tcheck_path(argv[2]) == 1)
+	if (ft_tcheck_path(argv[2], env) == 1)
 	{
 		printf("Error: fin kayna stop asa7bi\n");
 		exit(EXIT_FAILURE);
@@ -94,7 +94,7 @@ void	check_commands_and_here_doc(int argc, char **argv)
 	{
 		while (i < argc - 1)
 		{
-			if (!ft_tcheck_path(argv[i]))
+			if (!ft_tcheck_path(argv[i], env))
 			{
 				printf("Error: had lcommand makaynach %s\n", argv[i]);
 				exit(EXIT_FAILURE);

@@ -11,6 +11,21 @@
 /* ************************************************************************** */
 #include "pipex.h"
 
+void	check_args(int argc, char **env)
+{
+	if (argc != 5)
+	{
+		ft_putstr_fd("Error: Bad arguments\n", 2);
+		ft_putstr_fd("Usage: ./pipex file1 cmd1 cmd2 file2\n", 2);
+		exit(EXIT_FAILURE);
+	}
+	if (!*env)
+	{
+		ft_putstr_fd("Error: environment\n", 2);
+		exit(EXIT_FAILURE);
+	}
+}
+
 void	pipe_fork_tcheck_err(pid_t pid, int pipen)
 {
 	if (pipen < 0)
@@ -23,29 +38,4 @@ void	pipe_fork_tcheck_err(pid_t pid, int pipen)
 		perror("Error: fork");
 		exit(EXIT_FAILURE);
 	}
-}
-
-char	*find_path_child(char **result, int *pipefd, char **argv)
-{
-	int	len_buff;
-
-	close(pipefd[1]);
-	*result = malloc(1024);
-	if (!*result)
-		return (free(argv), NULL);
-	len_buff = read(pipefd[0], *result, 1024);
-	if (len_buff <= 0)
-		return (free(argv), free(*result), NULL);
-	close(pipefd[0]);
-	return (*result);
-}
-
-void	find_path_parent(int *pipefd, char **argv)
-{
-	close(pipefd[0]);
-	dup2(pipefd[1], STDOUT_FILENO);
-	close(pipefd[1]);
-	execve("/usr/bin/which", argv, NULL);
-	perror("Error executing cmd");
-	exit(EXIT_FAILURE);
 }

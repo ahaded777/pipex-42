@@ -13,16 +13,16 @@
 # define PIPEX_H
 
 # include "./libft/libft.h"
-# include <unistd.h>
+# include <fcntl.h>
 # include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/wait.h>
-# include <sys/stat.h>
-# include <fcntl.h>
-# include <stdlib.h>
+# include <unistd.h>
 
-void	find_path_parent(int *pipefd, char **argv);
-char	*find_path_child(char **result, int *pipefd, char **argv);
+void	check_args(int argc, char **env);
 void	pipe_fork_tcheck_err(pid_t pid, int pipen);
 
 #endif
